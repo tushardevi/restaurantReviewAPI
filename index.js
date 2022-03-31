@@ -5,7 +5,7 @@ import { Application, send, Status } from "https://deno.land/x/oak@v6.5.1/mod.ts
 // import { Md5 } from 'https://deno.land/std@0.89.0/hash/md5.ts'
 import { extractCredentials, getEtag, setHeaders } from "./api/modules/util.js";
 import { login } from "./api/modules/accounts.js";
-
+import Ajv from 'https://esm.sh/ajv'
 import router from "./api/routes.js";
 
 const port = 8080;
@@ -22,7 +22,10 @@ app.use(async (context, next) => {
 	if(context.request.url.pathname.includes("/api/") && !(context.request.url.pathname.includes("/api/accounts") && context.request.method === 'POST')) {
 		console.log('API CALL')
 		console.log(context.request.headers.get('Content-Type'))
+		
 		context.response.headers.set('Content-Type', 'application/vnd.api+json')
+
+		
 		if(context.request.headers.get('Content-Type') !== 'application/vnd.api+json') {
 			console.log('wrong Content-Type')
 			context.response.status = 415

@@ -1,0 +1,35 @@
+
+
+find a more secure way of transfer data to review (postcode and name), 
+
+
+MOVE THE JSON SCHEMA TO THE SERVER SIDE
+
+
+security
+HTTP basic authentication implemented with route protected.
+
+VALIDATE the add review data with JSON schema
+
+
+
+DO markdown type of comments 
+
+
+find out which template is shown when the page is being loaded
+
+
+
+hide the add Review button in the restaurant Details, so call api to check if user x has reviewed for restaurant y before
+
+set appropiate error status when responding from the API
+
+DO THE OPEN API documentation
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 
 /* logout.js */
 
-import { customiseNavbar, loadPage } from '../util.js'
+import { customiseNavbar, loadPage, suc_showMessage } from '../util.js'
 
 export async function setup(node) {
 	try {
@@ -13,7 +13,7 @@ export async function setup(node) {
 				localStorage.removeItem('username')
 				localStorage.removeItem('authorization')
 				loadPage('login')
-				showMessage('you are logged out')
+				suc_showMessage('you are logged out')
 			} else {
 				loadPage('foo')
 			}

@@ -6,60 +6,233 @@
 		<title>Single Page App</title>
 		<link rel="stylesheet" href="style/main.css">
 		<script type="module" src="./router.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
 	</head>
+
+
+
+		
 	<body>
-		<aside class="hidden"><p></p></aside>
+		<aside ><p></p></aside>
+
 		<header>
 			<h1>Single Page App</h1>
 			<p>&nbsp;</p>
 		</header>
+
+
 		<nav>
 			<ul>
-				<li><a href="/">Home</a></li>
+				<!-- <li><a href="/">Home</a></li> -->
 				<li><a href="/register">Register</a></li>
-				<li><a href="/foo">Foo</a></li>
+				<!-- <li><a href="/foo">Foo</a></li> -->
 				<li><a href="/login">Log in</a></li>
 				<li><a href="/logout">Log out</a></li>
+				<li><a href="/userHome">Home</a></li>
+				<li><a href="/addRestaurant">Add New Restaurant</a></li>
+				
+				<!-- <li><a href="/addRestaurant">addRestaurant</a></li> -->
+				<!-- <li><a href="/userHome">Home</a></li> -->
 			</ul>
 		</nav>
+
+
+
 		<main>
 			<article>
 			</article>
 		</main>
+
+
+
 		<footer>
 			<p>&nbsp;</p>
 		</footer>
 	</body>
+
+
+
+
+
 	<template id="home">
 	</template>
+
 	<template id="login">
 		<form name="login">
 			<p><label for="email">Username</label><br /><input type="text" name="user" placeholder="username" /></p>
 			<p><label for="pass">Password</label><br /><input type="password" name="pass" placeholder="password" /></p>
-			<p><button type="submit">Log in</button></p>
+			<button class = "button reviewButton" type="submit">Log in</button>
 		</form>
 	</template>
+
 	<template id="register">
 		<form name="register">
-			<p><label for="name">Username</label><br /><input type="text" name="user" placeholder="full name" /></p>
+			<p><label for="name">Username</label><br /><input type="text" type = hidden  name="user" placeholder="full name" /></p>
 			<p><label for="pass">Password</label><br /><input type="password" name="pass" placeholder="password" /></p>
-			<p><button type="submit">Create account</button></p>
+			<p><button class = "button reviewButton" type="submit">Create account</button></p>
 		</form>
 	</template>
+
 	<template id="logout">
 			<p>Do you want to log out?</p>
-			<p><button>OK</button><button>Cancel</button></p>
+			<p><button class = "button reviewButton">OK</button><button class = "button reviewButton" >Cancel</button></p>
 	</template>
-	<template id="foo">
-		<form name="upload" method="post">
-			<p><label for="pass">Choose a file</label><br /><input type="file" name="file" /></p>
-			<p><button type="submit">Upload</button></p>
-		</form>
-	</template>
+
 	<template id="quote">
 		<section>
 			<h2></h2>
 			<p></p>
 		</section>
 	</template>
+
+	<template id="userHome">
+
+
+	<table class="timecard">
+  
+	<caption>*****</caption>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Postcode</th>
+      		<th>Picture</th>
+		</tr>
+	</thead>
+  
+	<tbody>
+		<tr class="even">
+			<td id = "restaurantName" ></td>
+			<td id = "postcode" ></td>
+			<td id ="picture"><img width = "400px" height = "300px"/></td>
+			<td><a id = "link" href=""/>More Details</td>
+      
+    
+	</tbody>
+  
+	
+</table>
+
+
+	</template>
+
+
+	<template id="restaurantDetails">
+
+	    <table>
+  
+	<caption></caption>
+	<thead >
+		<tr>
+			<th id = "restaurantName_h"></th>
+			<th id = "cuisine_h"></th>
+			<th id = "postcode_h"></th>
+			<th id = "restaurant_desc_h"></th>
+			<th id = "date_time_h"> </th>
+			<th id ="picture_h"></th>
+		</tr>
+	</thead>
+
+	<tbody>
+    
+		<tr class = "even">
+			<td  id = "restaurantName" ></td>
+			<td id = "cuisine" ></td>
+			<td id = "postcode" ></td>
+			<td id = "restaurant_desc" ></td>
+			<td id = "date_time" ></td>
+			<td id ="picture"><img id="pic_img"/></td>
+			<td  id ="link"></td>
+	</tbody>
+	
+</table>
+	<br>
+	<br>
+	
+
+
+
+	</template>
+
+
+	<template id="addRestaurant">
+		<!-- <button id = addRestaurant>Add New Restaurant</button> -->
+
+		<form id ="AddRestaurantForm" "name="addRestaurant">
+		    <p><label for="restaurantName">Restaurant Name</label><br /><input type="text" name="restaurantName" placeholder="full name" /></p>
+			<p><label for="cuisine">Cuisine</label><br /><input type="text" name="cuisine" placeholder="cuisine" /></p>
+			<p><label for="postcode">Postcode</label><br /><input type="text"  name="postcode" placeholder="Postcode" /></p>
+			<p><label for="restaurantDesc">Restaurant Description</label><br /><input type="text" name="restaurant_desc" placeholder="About" /></p>
+			<p><label for="pass">Upload Photo</label><br /><input type="file" name="file" /></p>
+			<button class = "button reviewButton" type="submit">Add</button>
+		</form> 
+	</template>
+
+
+	</template>
+
+
+
+
+
+
+
+
+
+	<template id="addReview">
+		<table class="timecard">
+  
+	<caption>*****</caption>
+	<thead>
+		<tr>
+			<th>Restaurant Name</th>
+			<th>Postcode</th>
+		</tr>
+	</thead>
+  
+	<tbody>
+		<tr class="even">
+			<td id = "restaurantName" ></td>
+			<td id = "postcode" ></td>
+			<!-- <td id ="picture"><img width = "400px" height = "300px"/></td> -->
+			
+	</tbody>
+  
+	 
+</table>
+
+		<form id ="AddReviewForm">
+			
+		     
+
+			 <div class="slidecontainer">
+
+  				<p><label for="service">Service:</label><br /><input name = "service" type="range" min="1" max="5" value="1" class="slider" id="service">
+
+				<div class="output_ratings">
+					<p><font size="7" color="orange"><span id="service_out"</span></font></p>
+					</div> 
+				
+
+				<p><label for="food">Food:</label><br /><input name = "food" type="range" min="1" max="5" value="1" class="slider" id="food"> 
+				<div class="output_ratings">
+					<p><font size="7" color="orange"><span id="food_out"</span></font></p>
+				</div> 
+
+				<p><label for="value">Value:</label><br /><input name = "value" type="range" min="1" max="5" value="1" class="slider" id="value"> 
+
+				<div class="output_ratings">
+					<p><font size="7" color="orange"><span id="value_out""</span></font></p>
+				</div> 
+
+			</div>
+			<p><label for="comment">Comment:</label><br/>
+			<textarea placeholder = "Write your comment here" name = "comment" rows="4" cols="50" id="comment"/></textarea>
+			
+			<button class = "button reviewButton" type="submit">Add Review</button>
+		</form> 
+		<!-- <button id = "addReviewBtn" class = "button reviewButton" type="submit">Add Review</button> -->
+	</template>
+
+	
+	
 </html>

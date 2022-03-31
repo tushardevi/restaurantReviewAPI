@@ -1,12 +1,45 @@
 
 /* util.js */
 
-export function showMessage(message, delay = 3000) {
+export function err_showMessage(message, delay = 5000) {
 	console.log(message)
 	document.querySelector('aside p').innerText = message
-	document.querySelector('aside').classList.remove('hidden')
-	setTimeout( () => document.querySelector('aside').classList.add('hidden'), delay)
+	document.querySelector('aside').classList.add('err_msg')
+	setTimeout(()=>{
+		document.querySelector('aside p').innerText = ''
+		document.querySelector('aside').classList.remove('err_msg')
+
+
+	}, delay)
 }
+
+export function suc_showMessage(message, delay = 5000) {
+	console.log(message)
+	document.querySelector('aside p').innerText = message
+	document.querySelector('aside').classList.add('suc_msg')
+	setTimeout(()=>{
+		document.querySelector('aside p').innerText = ''
+		document.querySelector('aside').classList.remove('suc_msg')
+
+
+	}, delay)
+}
+
+
+
+
+// function addMsg(){
+// 	document.querySelector('aside p').innerText = ''
+// 	document.querySelector('aside').classList.remove('msg')
+
+// }
+
+// export function showMessage(message, delay = 6000) {
+// 	console.log(message)
+// 	document.querySelector('aside p').innerText = message
+// 	document.querySelector('aside').classList.remove('hidden')
+// 	setTimeout( () => document.querySelector('aside').classList.add('hidden'), delay)
+// }
 
 /* NAV FUNCTIONS */
 
@@ -17,11 +50,17 @@ export function loadPage(page) {
 
 export async function triggerPageChange() {
 	console.log('pageChange')
-	const page = getPageName()
+	let page = getPageName()
 	console.log(`trying to load page: ${page}`)
 	// get a reference to the correct template element
-	const template = document.querySelector(`template#${page}`) ?? document.querySelector('template#home')
+	let template = document.querySelector(`template#${page}`) //?? document.querySelector('template#login') // this is when server starts 
+	if(template == null){
+		page = 'login'
+		template = document.querySelector('template#login')
+	}
+
 	const node = template.content.cloneNode(true) // get a copy of the template node
+	
 	try {
 		const module = await import(`./js/${page}.js`)
 		await module.setup(node) // the setup script may need to modify the template fragment before it is displayed
@@ -38,11 +77,43 @@ export async function triggerPageChange() {
 }
 
 function getPageName() {
-	console.log(window.location.pathname)
-	const path = window.location.pathname.replace('/', '')
-	let page = path ? path : 'home'
-	console.log(`page: ${page}`)
-	return page
+	
+	const path2 = window.location.pathname
+	
+	// this path splits the restauraunt path and restaurant id
+	//so it could be used to retrieving a specific restaurant details
+	if(path2.includes('restaurantDetails_')){
+		const name_id = path2.split('_')
+		//console(name_id)
+		console.log(`name is: ${name_id[0]} and id is: ${name_id[1]}`)
+
+		const path = name_id[0].replace('/','')
+
+		let page = path ? path : 'login'
+		console.log(`page: ${page}`)
+		return page
+
+	}else if(path2.includes('addReview_')){
+		const name_id = path2.split('_')
+		//console(name_id)
+		console.log(`name is: ${name_id[0]} and id is: ${name_id[1]}`)
+
+		const path = name_id[0].replace('/','')
+
+		let page = path ? path : 'login'
+		console.log(`page: ${page}`)
+		return page
+
+	}
+	else{
+		const path = window.location.pathname.replace('/', '')
+		let page = path ? path : 'login'
+		console.log(`page: ${page}`)
+		return page
+
+	}
+
+	
 }
 
 export function highlightNav(page) {
