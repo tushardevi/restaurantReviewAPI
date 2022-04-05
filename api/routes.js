@@ -57,37 +57,7 @@ router.post('/api/accounts', async context => {
 	context.response.body = JSON.stringify({ status: 'success', msg: 'account created' })
 })
 
-router.post('/api/files', async context => {
-	console.log('POST /api/files')
-	try {
-		const token = context.request.headers.get('Authorization')
-		console.log(`auth: ${token}`)
-		const body  = await context.request.body()
-		const data = await body.value
-		console.log(data)
-		saveFile(data.base64, data.user)
-		context.response.status = 201
-		context.response.body = JSON.stringify(
-			{
-				data: {
-					message: 'file uploaded'
-				}
-			}
-		)
-	} catch(err) {
-		context.response.status = 400
-		context.response.body = JSON.stringify(
-			{
-				errors: [
-					{
-						title: 'a problem occurred',
-						detail: err.message
-					}
-				]
-			}
-		)
-	}
-})
+
 
 //************ */
 //GET request to get all the resturants as json format
@@ -181,7 +151,7 @@ router.get('/api/restaurants/:id/all-reviews', async context => {
 		
 	} catch(err) {
 		console.log("ERROR IN /api/restaurants/:id/all-reviews")
-
+		if(err.message == `restaurant with id : ${id} not found`)
 		context.response.status = 401
 		context.response.body = JSON.stringify(
 			{
@@ -223,7 +193,7 @@ router.post('/api/restaurants/:id/add-review', async context => {
 		if(details == -1 )throw new Error(`restaurant with id : ${id} not found`)
 		console.log("details for restaurant with id : " + id)
 		console.log(details)
-
+			//context.response.status = 201
 			context.response.body = JSON.stringify({
 			message: "Your review has been added!"
 		}) 
@@ -285,6 +255,7 @@ router.post('/api/restaurants/add', async context => {
 		await addRestaurant(data)
 
 		//send a msg back to the client
+		//context.response.status = 201
 		context.response.body = JSON.stringify({
 			message: "new restaurant added"
 		}) 

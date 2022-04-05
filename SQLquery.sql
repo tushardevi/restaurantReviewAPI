@@ -1,24 +1,24 @@
 -- table to store restaurant details
 
--- CREATE TABLE IF NOT EXISTS restaurants (
---   restaurantID MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
---   restaurantName VARCHAR(25) NOT NULL,
---   cuisine VARCHAR(70) NOT NULL,
---   postcode TEXT(500) NOT NULL,
---   restaurant_desc TEXT(1500) NOT NULL,
---   picture_name TEXT NOT NULL,
---   username MEDIUMINT(8) UNSIGNED,
---   date_time DATETIME NOT NULL, -- format: YYYY-MM-DD HH:MI:SS
---   FOREIGN KEY(username) REFERENCES accounts(id)
--- );
+CREATE TABLE IF NOT EXISTS restaurants (
+  restaurantID MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  restaurantName VARCHAR(25) NOT NULL,
+  cuisine VARCHAR(70) NOT NULL,
+  postcode TEXT(500) NOT NULL,
+  restaurant_desc TEXT(1500) NOT NULL,
+  picture_name TEXT NOT NULL,
+  username MEDIUMINT(8) UNSIGNED,
+  date_time DATETIME NOT NULL, -- format: YYYY-MM-DD HH:MI:SS
+  FOREIGN KEY(username) REFERENCES accounts(id)
+);
 
 --table to store reviews of all the restaurants;
 
 CREATE TABLE IF NOT EXISTS reviews( 
   reviewID MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   service_rating INT,
-  service_food INT,
-  service_value INT,
+  food_rating INT,
+  value_rating INT,
   comment TEXT,
   restaurantID MEDIUMINT(8) UNSIGNED,
   user_id MEDIUMINT(8) UNSIGNED,
