@@ -1,0 +1,98 @@
+<table>
+  
+	<caption></caption>
+	<thead>
+		<tr>
+			<th></th>
+			<th></th>
+      		<th></th>
+			<th></th>
+			
+			
+			
+		</tr>
+	</thead>
+  
+	<tbody>
+		<tr class="even">
+			<td id = "restaurantName" ></td>
+			<td id = "postcode" ></td>
+			<td id ="picture"></td>
+			
+			<td></td>
+			
+    
+	</tbody>
+		
+		
+  
+	<br><br><br>
+</table>
+
+********************************
+
+<table class="timecard">
+  
+	<caption>Average Review Score : <p id = "avg_score">nn</p></caption>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Postcode</th>
+      		<th>Picture</th>
+			<th></th>
+			<th></th>
+			
+			
+		</tr>
+	</thead>
+  
+	<tbody>
+		<tr class="even">
+			<td id = "restaurantName" ></td>
+			<td id = "postcode" ></td>
+			<td id ="picture"><img width = "400px" height = "300px"/></td>
+			
+			<td><a id = "link" href=""/>More Details</td>
+			
+    
+	</tbody>
+		
+		
+  
+	<br><br><br>
+</table>
+
+********************************
+
+async function showRestaurants(restaurants,node){
+	console.log("ready to upload data :")
+	console.log(restaurants)
+	const template = document.querySelector('template#userHome')
+	
+	for(const restaurant of restaurants) {
+		
+		const fragment = template.content.cloneNode(true)
+		let restaurantName = fragment.getElementById("restaurantName")
+		restaurantName.innerText = restaurant.restaurantName
+
+		let postcode = fragment.getElementById("postcode")
+		postcode.innerText = restaurant.postcode
+
+
+		let img_element = fragment.getElementById("picture")
+		let img = img_element.querySelector('img')
+		img.src = `${window.location.origin}/uploads/restaurantPictures/${restaurant.picture_name}`
+
+		
+		let link = fragment.getElementById("link")
+		const url = `restaurantDetails_${restaurant.restaurantID}`
+		link.href = url
+		//fragment.querySelector('td').innerText = restaurant.restaurantName
+		//fragment.querySelector('p').innerText = restaurant.postcode
+		//const img_element = fragment.querySelector('img')
+		//img_element.src = `${window.location.origin}/uploads/restaurantPictures/${restaurant.picture_name}`
+		node.appendChild(fragment)
+}
+
+	
+}

@@ -26,6 +26,8 @@ DO THE OPEN API documentation
 
 https://blog.restcase.com/4-maturity-levels-of-rest-api-design/
 
+DO THE AVERAGE functionality FOR ALL THE RESTAURANTs!!!
+
 
 
 

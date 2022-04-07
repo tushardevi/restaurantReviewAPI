@@ -13,11 +13,21 @@ export async function getAllRestaurants() {
         if(allRestaurants.length == 0){
             return JSON.stringify("")
         }
+        
+        for(const restaurant of allRestaurants){
+            const score = await calculate_all_avg_score(restaurant.restaurantID)
+            restaurant.average_review_score = score
+        }
+       
+       // console.log("ALL Restaturant DATA:")
+       // console.log(allRestaurants)
 
-        //console.log("ALL Restaturant DATA:")
-        //console.log(allRestaurants)
-   
-	    return JSON.stringify(allRestaurants)  
+
+        allRestaurants.forEach(restaurant => {
+		restaurant.url = `https://pony-stop-8080.codio-box.uk/api/restaurants/${restaurant.restaurantID}/restaurant-details`
+	})
+        console.log(allRestaurants)
+	    return allRestaurants 
 
     }catch(err){
         console.log(err.message)
@@ -26,48 +36,98 @@ export async function getAllRestaurants() {
 
 }
 
-//********************************************* */
-export async function getAllRestaurants2() {
-    console.log("FUNCTION / getAllRestaurants")
+async function calculate_all_avg_score(id){
     try{
-        
-        const sql = `SELECT restaurantID,restaurantName,cuisine,streetName,postcode FROM restaurants;`
-        const allRestaurants = await db.query(sql)
-        
-        if(allRestaurants.length == 0){
-            return JSON.stringify("")
-        }
+        // get all ratings for the restaurant
+        let sql = `SELECT service_rating,food_rating,value_rating FROM reviews WHERE restaurantID = ${id}`
+        const all_ratings = await db.query(sql)
+        console.log("ARRRRRRAAYYY")
+        console.log(all_ratings)
+        let total = 0
         
 
-        //iterate each restaurant one by one
-        for (const restaurant of allRestaurants){
-            restaurant.reviews = [] //create a empty array will store all reviews from particular restaurant
-            
-            //get all the reviews from specifc restaurants by giving the resturant ID 
-            const sql = `SELECT rating,comment FROM reviews WHERE restaurantID = "${restaurant.restaurantID}"`;
-            const review = await db.query(sql)
-            
-            //if review/s exist for that restaurant then push it to the reviews array
-            if(review){
-                //console.log("review from Restaurant ID : "+ restaurant.restaurantID)
-                restaurant.reviews.push(review)
-        
-            }
-            
+
+        //take sum of all categories
+        for(const rating of all_ratings){
+                total=  total + rating.service_rating + rating.food_rating + rating.value_rating
         }
+
+
+        //take average (sum of all categories / total number of ratings)
+        const average = total / (all_ratings.length * 3)
+        console.log("AVERAGE SCORE IS : " + average)
+        return parseInt(average)
+
+    }catch(err){
+        console.log(err.message)
+    }
+    
+}
+
+async function calculate_sep_avg_score(id){
+    try{
+        // get all service-ratings for the restaurant
+        
+        let sql = `SELECT service_rating FROM reviews WHERE restaurantID = ${id}`
+        const all_service = await db.query(sql)
+  
+        let service_total = 0
+    
+        //take sum of all service_ratings
+        for(const rating of all_service){
+                service_total =  service_total  + rating.service_rating
+        }
+
+        //take average of service_rating
+        const service_avg =  Math.ceil(service_total/all_service.length)
+
+
+        //********************** *********************/
+        //get all food_ratings
+        sql = `SELECT food_rating FROM reviews WHERE restaurantID = ${id}`
+        const all_food = await db.query(sql)
+  
+        let food_total = 0
+    
+        //take sum of all food_ratings
+        for(const rating of all_food){
+                food_total =  food_total  + rating.food_rating
+        }
+
+        //take average of  food_rating
+        const food_avg = Math.ceil(food_total/all_food.length)
+
+    //******************************************** */
+          //get all value_ratings
+        sql = `SELECT value_rating FROM reviews WHERE restaurantID = ${id}`
+        const all_value = await db.query(sql)
+  
+        let value_total = 0
+    
+        //take sum of all food_ratings
+        for(const rating of all_value){
+                value_total =  value_total  + rating.value_rating 
+        }
+
+        //take average of  food_rating
+        const value_avg =  Math.ceil(value_total/all_value.length)
+
+
+
 
        
-     
 
-   
-	    return JSON.stringify(allRestaurants)  // Now each restaurant object has a reviews attribute which shows all reviews for that restaurant
+
+
+
+        return {service_avg,food_avg,value_avg}
 
     }catch(err){
         console.log(err.message)
     }
-	
-
+    
 }
+
 
 
 
@@ -91,6 +151,7 @@ async function getDate(restaurant){
 
 }
 
+/** function to get one restaurant details*/ 
 export async function getRestaurant(id) {
     try{
         
@@ -108,12 +169,12 @@ export async function getRestaurant(id) {
             return JSON.stringify("")
         }
         restaurant = await getDate(restaurant)
+        const all_reviews = await calculate_sep_avg_score(restaurant[0].restaurantID)
 
-        
-        // //get all the reviews from specifc restaurants by giving the resturant ID 
-        // const reviewSQL = `SELECT rating,comment FROM reviews WHERE restaurantID = ${id}`;
-        // const reviews = await db.query(reviewSQL)
-        
+        console.log("STUDENTTTT OF YEAAAAAAARRRRR ")
+        console.log(JSON.stringify(all_reviews))
+        restaurant[0].avg_scores = all_reviews
+
 
         console.log(restaurant[0])
         // //attach the reviews to te restaurant object
@@ -270,6 +331,7 @@ export async function getAllReviews(restaurantID) {
             sql = `SELECT user FROM accounts WHERE id = ${review.user_id}`
             const username = await db.query(sql)
             review.username = username[0].user
+            
             delete review.user_id
         }
 
@@ -278,8 +340,10 @@ export async function getAllReviews(restaurantID) {
 
         //console.log("ALL Restaturant DATA:")
         //console.log(allRestaurants)
+
+
    
-	    return JSON.stringify(allReviews)  
+	    return allReviews
 
     }catch(err){
         console.log(err.message)

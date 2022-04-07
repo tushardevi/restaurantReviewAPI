@@ -40,7 +40,7 @@ async function addContent(node) {
 	//
     if(response.status == 200) {
         const restaurants = await response.json()
-		await showRestaurants(restaurants,node)
+		await showRestaurants(restaurants.data,node)
 		
 
 } 	else {
@@ -56,33 +56,70 @@ async function addContent(node) {
 
 }
 
+
+
 async function showRestaurants(restaurants,node){
 	console.log("ready to upload data :")
 	console.log(restaurants)
 	const template = document.querySelector('template#userHome')
 	
 	for(const restaurant of restaurants) {
-		
 		const fragment = template.content.cloneNode(true)
+		let caption =fragment.querySelector('caption')
+		caption.innerText = "Average Review Score:"
+
+		
+		//add a paragrpah to add the Average review Score
+		let show_score = document.createElement('p')
+		show_score.innerText = restaurant.average_review_score + "/5"
+		caption.appendChild(show_score)
+
+		// add a class to table
+		let table = fragment.querySelector('table')
+		table.classList.add("timecard")
+		table.style.margin = '1px 275px'
+
+		// label the headers of the table
+		let headers = fragment.querySelectorAll('th')
+
+		for(const header of headers){
+        if(header.id == "restaurantName_h") header.innerText = "Restaurant Name"
+        if(header.id == "picture_h") header.innerText = "Picture"
+        if(header.id == "postcode_h") header.innerText = "Postcode"
+    	}
+
+
+
+
+		// add the values for each column in the table
 		let restaurantName = fragment.getElementById("restaurantName")
 		restaurantName.innerText = restaurant.restaurantName
 
 		let postcode = fragment.getElementById("postcode")
 		postcode.innerText = restaurant.postcode
 
-
+		//create a new img tag and append it to the table
 		let img_element = fragment.getElementById("picture")
-		let img = img_element.querySelector('img')
+		let img = document.createElement('img')
 		img.src = `${window.location.origin}/uploads/restaurantPictures/${restaurant.picture_name}`
+		img.width = 400
+		img.height = 300
 
-		
-		let link = fragment.getElementById("link")
+		img_element.appendChild(img)
+	
+
+		// create a new link tag and append it to the table
+		let td_link = fragment.getElementById('link')
+		let link = document.createElement('a')
+		link.innerText = "More Details"
 		const url = `restaurantDetails_${restaurant.restaurantID}`
 		link.href = url
-		//fragment.querySelector('td').innerText = restaurant.restaurantName
-		//fragment.querySelector('p').innerText = restaurant.postcode
-		//const img_element = fragment.querySelector('img')
-		//img_element.src = `${window.location.origin}/uploads/restaurantPictures/${restaurant.picture_name}`
+	
+		td_link.appendChild(link)
+		
+
+
+		// append the fragment to the html 
 		node.appendChild(fragment)
 }
 

@@ -57,8 +57,8 @@ async function addContent_details(node) {
         const restaurant = await response.json()
 
         console.log("the details of one restaurant:")
-        console.log(restaurant)
-		await showRestaurant(restaurant,node)
+        console.log(restaurant.data)
+		await showRestaurant(restaurant.data,node)
         //await getAllReviews(name_id[1])
 		
 } 	else {
@@ -101,21 +101,10 @@ async function addContent_reviews(node) {
     if(response.status == 200) {
         console.log("sucessful in getting all reviews")
         const reviews = await response.json()
-        // console.log("the details of one restaurant:")
-        // console.log(reviews)
-        await getAllReviews(reviews,node)
-        // if(reviews == "No reviews were found for this restaurant"){
-        //     suc_showMessage("No reviews were found for this restaurant")
-        // }
-        // else{
-        //     console.log(reviews)
-        //     console.log("displaying all reviews")
-        //     await getAllReviews(reviews,node)
-        // }
+         
+         console.log(reviews)
+        await getAllReviews(reviews.data,node)     
             
-            
-            
-		
     } 	else {
         const json = await response.json()
         console.log(json)
@@ -135,27 +124,7 @@ async function getAllReviews(reviews,node){
 	console.log(reviews)
 	const template = document.querySelector('template#restaurantDetails')
 
-    // <p><font size="6" color="purple"><label for="review">Reviews :</label></font><br />
-
-	// // <section class = "output_reviews">
-
-	// // 	<h2 id="username_h"></h2>
-	// // 	<p id = "username"></p>
-
-	// // 	<h2 id = "ratings_h"><font color="black"></font><br></h2>
-
-	// // 	<h2 id="service_h:"></h2>
-	// // 	<p id = "service_rating"> </p>
-
-	// // 	<h2  id="Food_h"></h2>
-	// // 	<p id = "food_rating"></p>
-
-	// // 	<h2 id="value_h:"></h2>
-	// // 	<p id = "value_rating" ></p>
-
-	// // 	<h2 id = "comment_h"></h2>
-	// // 	<textarea id="comment">
-	// // 	</textarea>
+    
     if(reviews == "No reviews were found for this restaurant"){
             let para = document.createElement('h2')
             para.innerText = "No reviews were found for this restaurant"
@@ -236,48 +205,14 @@ async function getAllReviews(reviews,node){
 	
 }
 
-// </table>
 
-
-// 	</template>
-
-
-// 	<template id="restaurantDetails">
-
-// 	    <table class="timecard">
-  
-// 	<caption>*****</caption>
-// 	<thead >
-// 		<tr>
-// 			<th >Name</th>
-// 			<th>Cuisine</th>
-// 			<th>Postcode</th>
-// 			<th>Description</th>
-// 			<th>Date added</th>
-// 			<th>Picture</th>
-// 		</tr>
-// 	</thead>
-
-// 	<tbody>
-    
-// 		<tr class="even">
-// 			<td  id = "restaurantName" ></td>
-// 			<td id = "cuisine" ></td>
-// 			<td id = "postcode" ></td>
-// 			<td id = "restaurant_desc" ></td>
-// 			<td id = "date_time" ></td>
-// 			<td id ="picture"><img width = "400px" height = "300px"/></td>
-// 			<td><a id = "link" href=""/>Add Review</td>
-// 	</tbody>
-	
-// </table>
 
 
 
 
 async function showRestaurant(restaurant,node){
-	console.log("ready to upload data :")
-	//console.log(restaurant.data)
+	console.log("DISPLAYING SINGLE RESTAURANT DETAIL :")
+	console.log(restaurant)
     const restaurant_details = restaurant.data
     console.log(restaurant_details)
     
@@ -288,10 +223,24 @@ async function showRestaurant(restaurant,node){
     //creating table
     let table = node.querySelector('table')
     table.classList.add("timecard")
-
+ 
     //add caption to table
     let caption = node.querySelector('caption')
-    caption.innerText = "*******"
+    caption.innerText = "Average Ratings:"
+
+
+    //get all the scores for each rating category
+    const scores = restaurant_details.avg_scores
+    // add the average review score for food
+    let show_scores= document.createElement('p')
+
+    show_scores.innerText = "  Value:" + scores.food_avg + "  Service:" + scores.service_avg + "  Food :" + scores.food_avg
+    show_scores.style.color = "yellow"
+    caption.appendChild(show_scores)
+
+    
+
+
 
     //set all the headers
     let headers = node.querySelectorAll('th')
@@ -300,7 +249,7 @@ async function showRestaurant(restaurant,node){
         if(header.id == "restaurantName_h") header.innerText = "Restaurant Name"
         if(header.id == "cuisine_h") header.innerText = "Cuisine"
         if(header.id == "postcode_h") header.innerText = "Postcode"
-        if(header.id == "restaurantName_h") header.innerText = "Description"
+        if(header.id == "restaurant_desc_h") header.innerText = "Description"
         if(header.id == "date_time_h") header.innerText = "Date Added"
         if(header.id == "picture_h") header.innerText = "Picture"
 

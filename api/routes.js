@@ -18,6 +18,58 @@ router.get('/', async context => {
 	context.response.body = data
 })
 
+router.get('/api/', async context => {
+	console.log('GET /api/')
+	const token = context.request.headers.get('Authorization')
+	context.request.headers.get('Content-Type')
+	try{
+		const restaurants = {
+		openapi: '3.0.1',
+		info:{
+  			title:  'Restaurants Review API',
+  			description: 'API which allows to add new restaurants, and also lets you to add/view the latest reviews ',
+  			version: '1.0.0',
+		},
+		paths:{
+			'/api/' :{
+				get:{
+					tags: 'API homepage',
+					summary: 'a simple homepage for user interaction with API'
+
+				}
+			}
+		},
+        
+		links: [
+			{
+			    title: 'restaurants',
+				description: 'list of restaurants',
+				href: `https://pony-stop-8080.codio-box.uk/api/restaurants`
+			},
+			
+		]
+	}
+	//context.response.status = Status.OK
+	context.response.body = JSON.stringify(restaurants, null, 2)
+
+	}catch(err){
+		context.response.status = 401
+		context.response.body = JSON.stringify(
+			{
+				errors: [
+					{
+						title: '401 Unauthorized.',
+						detail: err.message
+					}
+				]
+			}
+		, null, 2)
+
+	}
+	
+})
+
+
 router.get('/api/accounts', async context => {
 	console.log('GET /api/accounts')
 	const token = context.request.headers.get('Authorization')
@@ -66,7 +118,33 @@ router.get('/api/restaurants', async context => {
 	try {
 		//const credentials = extractCredentials(token)
 		// SEND THE DATA TO THE CLIENT
-		context.response.body = await getAllRestaurants()
+		
+		let all_restaurants= await getAllRestaurants()
+
+
+		const restaurants = {
+		openapi: '3.0.1',
+		info:{
+  			title:  'All the restaurants',
+  			description: 'API call to get all the available restaurants',
+  			version: '1.0.0',
+		},
+		paths:{
+			'/api/restaurants' :{
+				get:{
+					tags: 'get all restaurants',
+					summary: 'this paths gets all the restaurants'
+
+				}
+			}
+		},
+        
+		data:all_restaurants
+			
+		
+	}
+	
+	context.response.body = JSON.stringify(restaurants,null,2)
 		
 
 	} catch(err) {
@@ -83,25 +161,36 @@ router.get('/api/restaurants', async context => {
 		, null, 2)
 	}
 })
-// app.get('/articles/:articleId/comments', (req, res) => {
-//   const { articleId } = req.params;
-//   const comments = [];
-//   // code to get comments by articleId
-//   res.json(comments);
-// });
+
 //GET request route to request a specific resturant by its ID(as object)
 router.get('/api/restaurants/:id/restaurant-details', async context => {
 	
 	try {
 		
 		const id = context.params.id
-		console.log(`GET restaurants/${id}`)
+		console.log(`GET restaurants/${id}/restaurants-details`)
 		
 		const details= await getRestaurant(id)
-		if(details == -1 )throw new Error(`restaurant with id : ${id} not found`)
-		console.log("SPIDER MAN DETAILS for restaurant with id : " + id)
-		console.log("*********")
-		console.log(details)
+		if(details == -1 ){
+			{
+			context.response.status = 404
+			context.response.body = JSON.stringify(
+			{
+				errors: [
+					{
+						title: '404 Not Found',
+						detail: `Restaurant with id ${id} not found.`
+					}
+				]
+			}
+		, null, 2)
+			//throw new Error(`restaurant with id : ${id} not found`)
+			return
+		}
+		}
+		console.log("DETAILS for restaurant with id : " + id)
+		//console.log("*********")
+		//console.log(details)
 
 		const token = context.request.headers.get('Authorization')
 	
@@ -112,11 +201,37 @@ router.get('/api/restaurants/:id/restaurant-details', async context => {
 
 		//send the restaurant details with the status
 		const response_buffer = {data: details,reviewStatus: flag}
+		response_buffer.data.all_reviews = `https://pony-stop-8080.codio-box.uk/api/restaurants/${id}/all-reviews`
+
+		//console.log(response_buffer)
+		const restaurant = {
+		openapi: '3.0.1',
+		info:{
+  			title:  'detail of one restaurant',
+  			description: 'API call to get details of one restaurant',
+  			version: '1.0.0',
+		},
+		paths:{
+			"/api/restaurants/:id/restaurant-details": {
+				get:{
+					tags: 'the details for one restaurant',
+					summary: "get all the details of restaurant id : "+ id
+
+				}
+			}
+		},
+        
+		data:response_buffer
+			
+		
+	}
+	
+	context.response.body = JSON.stringify(restaurant,null,2)
 
 		console.log("RESPONSE BUFFER ")
 		console.log(response_buffer)
 
-		context.response.body = response_buffer
+		//context.response.body = response_buffer
 		
 	} catch(err) {
 		console.log("ERROR IN /api/restaurants/:id/restaurant-details")
@@ -142,16 +257,53 @@ router.get('/api/restaurants/:id/all-reviews', async context => {
 		console.log(`GET reviews for restaurant/${id}`)
 		
 		const details= await getAllReviews(id)
-		if(details == -1 )throw new Error(`restaurant with id : ${id} not found`)
+		if(details == -1 ){
+			context.response.status = 404
+			context.response.body = JSON.stringify(
+			{
+				errors: [
+					{
+						title: '404 Not Found',
+						detail: `Restaurant with id ${id} not found.`
+					}
+				]
+			}
+		, null, 2)
+			
+			return
+		}
 
 		console.log("reviews for restaurant with id : " + id)
-		//console.log(details)
+		console.log(details)
 
-		context.response.body = details
+		const all_reviews = {
+		openapi: '3.0.1',
+		info:{
+  			title:  'all reviews from specific restaurants',
+  			description: 'API call to get all reviews of a restaurant',
+  			version: '1.0.0',
+		},
+		paths:{
+			"/api/restaurants/:id/all-reviews": {
+				get:{
+					tags: 'the all reviews of a restaurant',
+					summary: "get all the reviews of restaurant id : "+ id
+
+				}
+			}
+		},
+        
+		data:details
+		
+	}
+	
+	context.response.body = all_reviews
+
+		//context.response.body = details
 		
 	} catch(err) {
 		console.log("ERROR IN /api/restaurants/:id/all-reviews")
-		if(err.message == `restaurant with id : ${id} not found`)
+	
 		context.response.status = 401
 		context.response.body = JSON.stringify(
 			{
@@ -163,6 +315,7 @@ router.get('/api/restaurants/:id/all-reviews', async context => {
 				]
 			}
 		, null, 2)
+		
 	}
 })
 
