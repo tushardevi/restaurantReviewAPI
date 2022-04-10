@@ -24,7 +24,7 @@ export async function getAllRestaurants() {
 
 
         allRestaurants.forEach(restaurant => {
-		restaurant.url = `https://pony-stop-8080.codio-box.uk/api/restaurants/${restaurant.restaurantID}/restaurant-details`
+		restaurant.url = `https://pony-stop-8080.codio-box.uk/api/restaurants/${restaurant.restaurantID}/details`
 	})
         console.log(allRestaurants)
 	    return allRestaurants 
@@ -414,8 +414,28 @@ async function getDateTime(){
 
 }
 
+export async function deleteRestaurant(id){
+    try{
+        const res = await checkRestaurantID(id)
+        if(res == -1) {
+            console.log("restaurants exists")
+            return -1
+        }
+        console.log("deleting restautant")
+        const sql = `DELETE FROM restaurants WHERE restaurantID = "${id}"`
+        await db.query(sql)
+        return 1
+    }catch(err){
+        console.log("ERROR WHEN DELETING A RESTAURANT")
+        console.log(err.message)
+
+    }
+    
+
+}
 
 
 
 
-export default {getAllRestaurants, getRestaurant, addRestaurant}
+
+export default {getAllRestaurants, getRestaurant, addRestaurant,deleteRestaurant}

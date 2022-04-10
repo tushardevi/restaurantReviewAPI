@@ -5,7 +5,7 @@ import { Router } from 'https://deno.land/x/oak@v6.5.1/mod.ts'
 
 import { extractCredentials, saveFile } from './modules/util.js'
 import { login, register } from './modules/accounts.js'
-import { getAllRestaurants, getRestaurant, addRestaurant,checkDuplicates,addReview,getAllReviews,checkForReview } from './modules/restaurants.js'
+import { getAllRestaurants, getRestaurant, addRestaurant,checkDuplicates,addReview,getAllReviews,checkForReview, deleteRestaurant} from './modules/restaurants.js'
 //import Ajv from 'https://esm.sh/ajv'
 
 const router = new Router()
@@ -144,6 +144,7 @@ router.get('/api/restaurants', async context => {
 		
 	}
 	
+	
 	context.response.body = JSON.stringify(restaurants,null,2)
 		
 
@@ -163,12 +164,12 @@ router.get('/api/restaurants', async context => {
 })
 
 //GET request route to request a specific resturant by its ID(as object)
-router.get('/api/restaurants/:id/restaurant-details', async context => {
+router.get('/api/restaurants/:id/details', async context => {
 	
 	try {
 		
 		const id = context.params.id
-		console.log(`GET restaurants/${id}/restaurants-details`)
+		console.log(`GET restaurants/${id}/details`)
 		
 		const details= await getRestaurant(id)
 		if(details == -1 ){
@@ -368,13 +369,6 @@ router.post('/api/restaurants/:id/add-review', async context => {
 	}
 })
 
-// make sure user only uploads images, chekc for vlaidation in client side
-
-
-// orgonaze code for clientside, create functions.
-
-// when adding the postocode, format it so there is not space inbetween and all characters are in upper case when saved to the database
-// and when storing the restaurant name, do the same. Maybe take out the spaces and check if the restaurant already exists in the DB
 
 // send a reasonsable code back at get and post requests , look online for http codes
 // route to post a new restaurant 
@@ -382,8 +376,9 @@ router.post('/api/restaurants/add', async context => {
 	
 
 	console.log('POST New Restaturant')
-	//const body  = await context.request.body()
-
+	
+	const body  = await context.request.body()
+	console.log(body)
 	try {
 		
 		//extract the credentials from token
@@ -396,19 +391,32 @@ router.post('/api/restaurants/add', async context => {
 		const data = await body.value
 
 		data.user = credentials.user
-		//console.log("this id the API add and the username is: "+  credentials.user)
-		//check for duplicate restaurants, (in case client adds an already existing restaurant)
+
 		const flag = await checkDuplicates(data.postcode,data.restaurantName)
 		if(flag == false){
-			const msg = `A restaurant with name:  ${data.restaurantName} and postcode: ${data.postcode} already exists.`
-			throw new Error(msg)
-		} 
+			//const msg = `A restaurant with name:  ${data.restaurantName} and postcode: ${data.postcode} already exists.`
+			//throw new Error(msg)
+			context.response.status = 409
+			context.response.body = JSON.stringify(
+				{
+					errors: [
+						{
+							title: '409 (Conflict) resource already exists',
+							detail: `A restaurant with name:  ${data.restaurantName} and postcode: ${data.postcode} already exists.`
+						}
+					]
+				}       
+			, null, 2)
+
+			return
+		}
+		
 
 		//else add the restaurant to the DB
 		await addRestaurant(data)
 
 		//send a msg back to the client
-		//context.response.status = 201
+		context.response.status = 201
 		context.response.body = JSON.stringify({
 			message: "new restaurant added"
 		}) 
@@ -443,6 +451,76 @@ router.get("/(.*)", async context => {
 	const data = await Deno.readTextFile('spa/index.html')
 	context.response.body = data
 })
+
+
+
+//Delete method, to delete a restaurant by USING the id as parameters
+router.delete('/api/restaurants/:id/delete', async context => {
+	try {
+
+		const id = context.params.id
+		console.log(`DELETE /api/restaurants/${id}/delete`)
+
+		//extract the credentials from token
+		const token = context.request.headers.get('Authorization')
+
+		const res = await deleteRestaurant(id)
+
+		if(res == -1){
+			console.log("4000444 ERRORRRR")
+			context.response.status = 404
+			context.response.body = JSON.stringify(
+				{
+					errors: [
+						{
+							title: '404 Not Found.',
+							detail: `Restaurant with ID : ${id} not found`
+						}
+					]
+				}
+			, null, 2)
+		return
+
+	}else{
+		context.response.body = JSON.stringify(
+				{
+					message: [
+						{
+							title: '200 resource deleted.',
+							detail: `Restaurant with ID : ${id} has been sucessfully deleted`
+						}
+					]
+				}
+			, null, 2)
+	}
+		
+	
+		
+	} catch(err) {
+		console.log("ERROR IN /api/restaurants/:id/delete-restaurant")
+	
+		context.response.status = 401
+		context.response.body = JSON.stringify(
+			{
+				errors: [
+					{
+						title: '401 Unauthorized.',
+						detail: err.message
+					}
+				]
+			}
+		, null, 2)
+		
+	}
+})
+
+
+
+
+
+
+
+
 
 // dont write routes here, they will never get executed
 

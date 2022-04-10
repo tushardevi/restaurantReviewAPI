@@ -38,7 +38,7 @@ async function addContent_details(node) {
 		//console(name_id)
 	console.log(`path name is: ${name_id[0]} and restaurant id is: ${name_id[1]}`)
 
-    const url = `/api/restaurants/${name_id[1]}/restaurant-details`
+    const url = `/api/restaurants/${name_id[1]}/details`
     const options = {
         method: 'GET',
         headers: {
@@ -192,6 +192,7 @@ async function getAllReviews(reviews,node){
                 comment.innerText = review.comment
                 comment.disabled = true
                 comment.style="background-color:pink;"
+                comment.width ="100px"
                 container.appendChild(comment)
 
                 //appened the container to the template and proceed to the 
